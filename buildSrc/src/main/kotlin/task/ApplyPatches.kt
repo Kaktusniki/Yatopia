@@ -45,7 +45,7 @@ internal fun Project.createApplyPatchesTask(
                 val gitCommand = arrayListOf("am", "--3way", "--ignore-whitespace",
                     "--rerere-autoupdate", "--whitespace=fix", "--reject", "-C0", patch)
                 if (gitCmd(*gitCommand.toTypedArray(), dir = projectDir, printOut = true).exitCode != 0) {
-                    gitCmd("add", ".", dir = projectDir, printOut = true)
+                    gitCmd("add", ".", "--force", dir = projectDir, printOut = true)
                     gitCmd("am", "--continue", dir = projectDir, printOut = true)
                 }
             }
@@ -69,7 +69,7 @@ internal fun Project.createApplyPatchesTask(
             logger.lifecycle(">>> Resetting subproject $name")
             if (projectDir.exists()) {
                 ensureSuccess(gitCmd("fetch", "origin", dir = projectDir))
-                ensureSuccess(gitCmd("reset", "--hard", "origin/master", dir = projectDir))
+                ensureSuccess(gitCmd("reset", "--hard", "origin/master", "--force", dir = projectDir))
             } else {
                 ensureSuccess(gitCmd("clone", sourceRepo.absolutePath, projectDir.absolutePath, printOut = true))
             }

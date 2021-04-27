@@ -15,14 +15,22 @@ internal fun Project.createSetupUpstreamTask(
     receiver(this)
     group = taskGroup
     doLast {
-        val setupUpstreamCommand = if (upstreamDir.resolve(toothpick.upstreamLowercase).exists()) {
-            "./${toothpick.upstreamLowercase} patch"
+        val setupUpstreamCommand = if (upstreamDir.resolve("scripts/build.sh").exists()) {
+            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                "scripts/build.sh"
+            } else {
+                "./${toothpick.upstreamLowercase} patch"
+            }
         } else if (
-            upstreamDir.resolve("build.gradle.kts").exists()
-            && upstreamDir.resolve("subprojects/server.gradle.kts").exists()
-            && upstreamDir.resolve("subprojects/api.gradle.kts").exists()
+                upstreamDir.resolve("build.gradle.kts").exists()
+                && upstreamDir.resolve("subprojects/server.gradle.kts").exists()
+                && upstreamDir.resolve("subprojects/api.gradle.kts").exists()
         ) {
-            "./gradlew applyPatches"
+            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+                "gradlew applyPatches"
+            } else {
+                "./gradlew applyPatches"
+            }
         } else {
             error("Don't know how to setup upstream!")
         }
